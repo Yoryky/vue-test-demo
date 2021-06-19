@@ -8,10 +8,14 @@
     </p>
     <h3>Installed CLI Plugins</h3>
     <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript" target="_blank" rel="noopener">typescript</a></li>
+      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank"
+             rel="noopener">babel</a></li>
+      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank"
+             rel="noopener">router</a></li>
+      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank"
+             rel="noopener">vuex</a></li>
+      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript" target="_blank"
+             rel="noopener">typescript</a></li>
     </ul>
     <h3>Essential Links</h3>
     <ul>
@@ -25,7 +29,8 @@
     <ul>
       <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
       <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
+      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a>
+      </li>
       <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
     </ul>
@@ -35,47 +40,87 @@
       <li @click="addItem">add item</li>
       <li @click="deleteItem">delete item</li>
     </ul>
+    <ul>
+      <li @click="showVuexDialog">show vuex dialog</li>
+      <li @click="hideVuexDialog">hide vuex dialog</li>
+      <li @click="addVuexItem">add vuex item</li>
+      <li @click="deleteVuexItem">delete vuex item</li>
+    </ul>
     <textarea style="height: 50px;width: 300px" @keydown="onKeyDown($event)"/>
     <CustomDialog v-if="isDialogVisible"/>
+    <VuexCustomDialog v-if="isVuexDialogVisible"/>
   </div>
 </template>
 
 <script lang="ts">
 
-import CustomDialog from './CustomDialog'
+import CustomDialog from '@/components/CustomDialog.vue';
 import EventBus from '@/utils/EventBus';
+import VuexCustomDialog from '@/components/VuexCustomDialog.vue';
+import {mapMutations, mapState} from 'vuex';
+
 export default {
-  name:'HelloWorld',
+  name: 'HelloWorld',
+  computed: {
+
+    ...mapState(['items']),
+  },
   data() {
     return {
-      isDialogVisible: false
-    }
+      isDialogVisible: false,
+      isVuexDialogVisible: false,
+    };
   },
   components: {
+    VuexCustomDialog,
     CustomDialog
   },
   props: {
     msg: String
   },
   methods: {
+    ...mapMutations(["addCustomItem","deleteCustomItem","setCustomFilterValue"]),
     showDialog() {
-      this.isDialogVisible = true
-    },
-    hideDialog(){
-      this.isDialogVisible = false
-    },
+      this.isDialogVisible = true;
+    }
+    ,
+    hideDialog() {
+      this.isDialogVisible = false;
+    }
+    ,
     addItem() {
-      EventBus.$emit('change-item', 'add')
-    },
+      EventBus.$emit('change-item', 'add');
+    }
+    ,
     deleteItem() {
-      EventBus.$emit('change-item', 'delete')
-    },
+      EventBus.$emit('change-item', 'delete');
+    }
+    ,
     onKeyDown(event) {
-      console.log(event)
-      EventBus.$emit('change-item', 'filter')
+      console.log(event);
+      EventBus.$emit('change-item', 'filter');
+      this.setCustomFilterValue('y')
+    }
+    ,
+    showVuexDialog() {
+      this.isVuexDialogVisible = true;
+    }
+    ,
+    hideVuexDialog() {
+      this.isVuexDialogVisible = false;
+    }
+    ,
+    addVuexItem() {
+      const item = `item-${this.items.length}`;
+      this.addCustomItem(item);
+    }
+    ,
+    deleteVuexItem() {
+      this.deleteCustomItem();
     },
   },
 }
+;
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -83,16 +128,19 @@ export default {
 h3 {
   margin: 40px 0 0;
 }
+
 ul {
   list-style-type: none;
   padding: 0;
 }
+
 li {
   display: inline-block;
   margin: 0 10px;
   background: #eee;
   padding: 5px;
 }
+
 a {
   color: #42b983;
 }
